@@ -1,23 +1,46 @@
-[tool.poetry]
+[project]
 name = "molliechallenge"
 version = "0.1.0"
 description = ""
-authors = ["Gabriel Barbosa Soares <gabrielclimb@gmail.com>"]
-readme = "README.md"
+authors = [
+  {name = "Gabriel Barbosa Soares", email = "gabrielclimb@gmail.com" },
+  ]
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.11"
+dependencies = [
+  "pandas==2.0.3",
+  "jupyterlab==4.0.4",
+]
 
-[tool.poetry.dependencies]
-python = "^3.11"
-pandas = "^2.0.3"
-jupyterlab = "^4.0.4"
-pre-commit = "^3.3.3"
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "black",
+    "pytest",
+    "pytest-cov",
+    "pre-commit",
+]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.4.0"
-pytest-cov = "^4.1.0"
-ruff = "^0.0.283"
-black = "^23.7.0"
-ipdb = "^0.13.13"
+[tool.black]
+line-length = 90
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.ruff]
+# similar to black's
+line-length = 90
+
+[tool.ruff.pydocstyle]
+convention = "google"
