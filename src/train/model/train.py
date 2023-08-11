@@ -37,6 +37,8 @@ def main():
     best_threshold = get_best_threshold(rf_model, class_weight_ratio, X_train, y_train)
 
     mlflow.set_tracking_uri(TRACKING_URI)
+    experiment_name = "Breast-Cancer-Training"
+    mlflow.set_experiment(experiment_name=experiment_name)
     with mlflow.start_run(run_name="BreastCancerModelTraining"):
         y_prob = rf_model.predict_proba(X_test)[:, 1]
 

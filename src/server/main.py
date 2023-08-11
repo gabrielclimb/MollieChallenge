@@ -2,12 +2,13 @@ import pandas as pd
 import uvicorn
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
+from typing import Dict
 
 from src.helpers.mlflow import MlflowModel
 from src.server.schemas import BreastCancerData
 
 model = MlflowModel("BreastCancerModel")
-
+threshold = float(model.parameters["threshold"])
 app = FastAPI()
 
 
@@ -17,10 +18,10 @@ def hello() -> str:
 
 
 @app.post("/predict")
-def predict(data: BreastCancerData) -> dict:
+def predict(data: BreastCancerData) -> Dict[str, float]:
     df = pd.DataFrame(jsonable_encoder(data), index=[0])
     prediction = model.predict(df)
-    return {"prediction": prediction[0]}
+    return {"prediction": prediction[1], "threshold": threshold}
 
 
 if __name__ == "__main__":

@@ -61,6 +61,14 @@ services:
             - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
         command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
+        networks:
+            - network
+
+networks:
+  network:
+    driver: bridge
+    name: mlflwo_network
+
 
 volumes:
     dbdata:

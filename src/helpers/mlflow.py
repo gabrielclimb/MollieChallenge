@@ -34,11 +34,6 @@ class MlflowModel:
         self.infos = self.__get_model_info(self.run_id)
 
     def __get_model_version_and_run_id(self) -> int:
-        """Get model production version and return it
-
-        Returns:
-            int: model version
-        """
         for model in self.client.search_model_versions(f"name='{self.model_name}'"):
             if model.current_stage == self.stage:
                 return model.version, model.run_id
@@ -46,69 +41,21 @@ class MlflowModel:
         raise ValueError(f"Not find any model in {self.stage} stage")
 
     def __get_model(self):
-        """Get model in production stage on mlflow.
-
-        Returns:
-            model: The return's type depends on mlflow flavor was passed
-        """
-
         return mlflow.pyfunc.load_model(self.production_path)
 
     def predict(self, X: pd.DataFrame):
-        return self.model.predict(X)
-
-    # def __get_input_columns(self) -> list:
-    #     """Get input columns saved on mlflow.
-
-    #     Returns:
-    #         list: columns names used to train model and also used on prediction
-    #     """
-    #     model_infos = mlflow.pyfunc.load_model(self.production_path)
-    #     return model_infos.metadata.get_input_schema().column_names()
+        return self.model.predict(X)[0]
 
     def __get_model_info(self, run_id) -> None:
-        """Get run informations based on run id.
-
-        Args:
-            run_id (str): run id hash
-        """
         self.model_info = mlflow.get_run(run_id=run_id).to_dictionary()
 
     @property
     def parameters(self) -> dict:
-        """Get model parameters
-
-        Returns:
-            dict: parameters
-        """
         return self.model_info["data"]["params"]
 
     @property
     def metrics(self) -> dict:
-        """Get model metrics
-
-        Returns:
-            dict: metrics
-        """
         return self.model_info["data"]["metrics"]
-
-    @property
-    def tags(self) -> dict:
-        """Get model tags
-
-        Returns:
-            dict: tags
-        """
-        return self.model_info["data"]["tags"]
-
-    @property
-    def experiment_id(self) -> str:
-        """Get Experiment id
-
-        Returns:
-            str: Experiment id
-        """
-        return self.model_info["info"]["experiment_id"]
 
     @property
     def s3_path(self) -> str:
