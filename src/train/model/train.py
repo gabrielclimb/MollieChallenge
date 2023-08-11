@@ -1,19 +1,21 @@
 from typing import Any, Dict
 
+import matplotlib.pyplot as plt
+import mlflow
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     confusion_matrix,
     f1_score,
+    precision_recall_curve,
     roc_auc_score,
 )
-from sklearn.model_selection import (
-    train_test_split,
-)
+from sklearn.model_selection import train_test_split
 from yellowbrick.classifier import DiscriminationThreshold
 
-from src.train.helpers.model import save_model
+TRACKING_URI = "http://0.0.0.0:5000/"
 
 
 def main():
@@ -27,15 +29,43 @@ def main():
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, random_state=42, test_size=0.3, stratify=y
     )
-    # TODO: Save data
+
     class_weight_ratio = calc_class_weight(y_train, y_test)
+
     rf_model = train_model(X_train, y_train, class_weight_ratio)
 
     best_threshold = get_best_threshold(rf_model, class_weight_ratio, X_train, y_train)
 
-    save_model(rf_model, f"src/artifacts/model_{best_threshold}.joblib")
+    mlflow.set_tracking_uri(TRACKING_URI)
+    with mlflow.start_run(run_name="BreastCancerModelTraining"):
+        y_prob = rf_model.predict_proba(X_test)[:, 1]
 
-    print(generate_metrics(rf_model, best_threshold, X_test, y_test))
+        mlflow.sklearn.log_model(
+            rf_model,
+            artifact_path="model",
+            input_example=X_train.head(),
+            pyfunc_predict_fn="predict_proba",
+        )
+
+        mlflow.log_params(rf_model.get_params())
+        mlflow.log_param("threshold", best_threshold)
+        mlflow.log_metrics(generate_metrics(rf_model, best_threshold, X_test, y_test))
+
+        precision_rf, recall_rf, thresholds_rf = precision_recall_curve(y_test, y_prob)
+
+        threshold = best_threshold
+        y_pred = y_prob > threshold
+        plot_confusion_matrix(y_test, y_pred)
+
+        mlflow.log_figure(
+            plot_confusion_matrix(y_test, y_pred),
+            "confusion_matrix.png",
+        )
+
+        mlflow.log_figure(
+            plot_precision_recall(precision_rf, recall_rf, thresholds_rf),
+            "precision_recall.png",
+        )
 
 
 def calc_class_weight(y_train: pd.Series, y_test: pd.Series) -> np.float64:
@@ -49,7 +79,6 @@ def train_model(
     rf_model = RandomForestClassifier(
         class_weight={0: 1, 1: class_weight_ratio}, random_state=42
     )
-
     return rf_model.fit(X_train, y_train)
 
 
@@ -84,8 +113,34 @@ def generate_metrics(
     return {
         "roc_auc_score": roc_auc_score(y_test, y_prob),
         "f1_score": f1_score(y_test, y_pred, average="weighted"),
-        "confusion_matrix": {"tn": tn, "fp": fp, "fn": fn, "tp": tp},
+        "tn": tn,
+        "fp": fp,
+        "fn": fn,
+        "tp": tp,
     }
+
+
+def plot_confusion_matrix(y_test, y_pred):
+    fig, ax = plt.subplots()
+    cm = confusion_matrix(y_test, y_pred, normalize="true") * 100
+    df = pd.DataFrame(cm.T, index=["B", "M"], columns=["B", "M"])
+    ax = sns.heatmap(df, annot=True, cmap=sns.color_palette("Blues"))
+    ax.set_xlabel("Predicted label")
+    ax.set_ylabel("True label")
+    return fig
+
+
+def plot_precision_recall(precisions, recalls, thresholds):
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.plot(thresholds, precisions[:-1], "r--", label="Precisions")
+    ax.plot(thresholds, recalls[:-1], "#424242", label="Recalls")
+    ax.set_title("Precision and Recall \n Tradeoff", fontsize=18)
+    ax.set_ylabel("Level of Precision and Recall", fontsize=16)
+    ax.set_xlabel("Thresholds", fontsize=16)
+    ax.legend(loc="best", fontsize=14)
+    ax.set_xlim([0, 1])
+    ax.set_ylim([0, 1])
+    return fig
 
 
 if __name__ == "__main__":
