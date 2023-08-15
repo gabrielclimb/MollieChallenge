@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+    api:
+        restart: always
+        build:
+          target: api
+        image: model_api
+        container_name: model_api
+        ports:
+            - "8000:8000"
+        environment:
+            - AWS_ACCESS_KEY_ID=minio
+            - AWS_SECRET_ACCESS_KEY=minio123
+            - MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+            - MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9000
+        networks:
+          - infra_default
+    train:
+        build:
+          target: train
+        image: model_train
+        container_name: model_train
+        environment:
+            - AWS_ACCESS_KEY_ID=minio
+            - AWS_SECRET_ACCESS_KEY=minio123
+            - MLFLOW_TRACKING_URI=http://host.docker.internal:5000
+            - MLFLOW_S3_ENDPOINT_URL=http://host.docker.internal:9000
+        networks:
+          - infra_default
+
+networks:
+  infra_default:
+    external: true
