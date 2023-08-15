@@ -136,6 +136,7 @@ def log_model_mlflow(X_train, X_test, y_test, rf_model, best_threshold):
             artifact_path="model",
             input_example=X_train.head(),
             pyfunc_predict_fn="predict_proba",
+            registered_model_name="BreastCancerModel",
         )
 
         mlflow.log_params(rf_model.get_params())
