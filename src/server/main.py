@@ -14,11 +14,27 @@ app = FastAPI()
 
 @app.get("/")
 def hello() -> str:
+    """
+    Endpoint to test if the API is running.
+
+    Returns:
+        str: A welcome message.
+    """
     return "BreastCancerModel API"
 
 
 @app.post("/predict")
 def predict(data: BreastCancerData) -> Dict[str, float]:
+    """
+    Endpoint to predict breast cancer using provided features.
+
+    Args:
+        data (BreastCancerData): Input data containing the features required for
+            the prediction.
+
+    Returns:
+        Dict[str, float]: Prediction result and threshold value.
+    """
     df = pd.DataFrame(jsonable_encoder(data), index=[0])
     prediction = model.predict(df)
     return {"prediction": prediction[1], "threshold": threshold}
