@@ -17,7 +17,7 @@ repos:
       hooks:
       - id: pytest-check
         name: pytest-check
-        entry: pytest --cov=src --junitxml=report.xml src -vvv
+        entry: pytest --cov=src --junitxml=report.xml src/ -vvv
         language: python_venv
         pass_filenames: false
         always_run: true
