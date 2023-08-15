@@ -15,8 +15,6 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from yellowbrick.classifier import DiscriminationThreshold
 
-# TRACKING_URI = "http://0.0.0.0:5000/"
-
 
 def main():
     dataset_url = "https://raw.githubusercontent.com/pkmklong/Breast-Cancer-Wisconsin-Diagnostic-DataSet/master/data.csv"
@@ -36,37 +34,7 @@ def main():
 
     best_threshold = get_best_threshold(rf_model, class_weight_ratio, X_train, y_train)
 
-    experiment_name = "Breast-Cancer-Training"
-    mlflow.set_experiment(experiment_name=experiment_name)
-    with mlflow.start_run(run_name="BreastCancerModelTraining"):
-        y_prob = rf_model.predict_proba(X_test)[:, 1]
-
-        mlflow.sklearn.log_model(
-            rf_model,
-            artifact_path="model",
-            input_example=X_train.head(),
-            pyfunc_predict_fn="predict_proba",
-        )
-
-        mlflow.log_params(rf_model.get_params())
-        mlflow.log_param("threshold", best_threshold)
-        mlflow.log_metrics(generate_metrics(rf_model, best_threshold, X_test, y_test))
-
-        precision_rf, recall_rf, thresholds_rf = precision_recall_curve(y_test, y_prob)
-
-        threshold = best_threshold
-        y_pred = y_prob > threshold
-        plot_confusion_matrix(y_test, y_pred)
-
-        mlflow.log_figure(
-            plot_confusion_matrix(y_test, y_pred),
-            "confusion_matrix.png",
-        )
-
-        mlflow.log_figure(
-            plot_precision_recall(precision_rf, recall_rf, thresholds_rf),
-            "precision_recall.png",
-        )
+    log_model_mlflow(X_train, X_test, y_test, rf_model, best_threshold)
 
 
 def treat_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -155,6 +123,40 @@ def plot_precision_recall(precisions, recalls, thresholds):
     ax.set_xlim([0, 1])
     ax.set_ylim([0, 1])
     return fig
+
+
+def log_model_mlflow(X_train, X_test, y_test, rf_model, best_threshold):
+    experiment_name = "Breast-Cancer-Training"
+    mlflow.set_experiment(experiment_name=experiment_name)
+    with mlflow.start_run(run_name="BreastCancerModelTraining"):
+        y_prob = rf_model.predict_proba(X_test)[:, 1]
+
+        mlflow.sklearn.log_model(
+            rf_model,
+            artifact_path="model",
+            input_example=X_train.head(),
+            pyfunc_predict_fn="predict_proba",
+        )
+
+        mlflow.log_params(rf_model.get_params())
+        mlflow.log_param("threshold", best_threshold)
+        mlflow.log_metrics(generate_metrics(rf_model, best_threshold, X_test, y_test))
+
+        precision_rf, recall_rf, thresholds_rf = precision_recall_curve(y_test, y_prob)
+
+        threshold = best_threshold
+        y_pred = y_prob > threshold
+        plot_confusion_matrix(y_test, y_pred)
+
+        mlflow.log_figure(
+            plot_confusion_matrix(y_test, y_pred),
+            "confusion_matrix.png",
+        )
+
+        mlflow.log_figure(
+            plot_precision_recall(precision_rf, recall_rf, thresholds_rf),
+            "precision_recall.png",
+        )
 
 
 if __name__ == "__main__":

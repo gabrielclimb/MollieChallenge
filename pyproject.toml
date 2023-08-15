@@ -54,3 +54,6 @@ line-length = 90
 
 [tool.ruff.pydocstyle]
 convention = "google"
+
+[tool.pytest.ini_options]
+pythonpath = "src"

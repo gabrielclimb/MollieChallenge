@@ -12,4 +12,4 @@ FROM base as api
 CMD ["uvicorn", "src.server.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 FROM base as train
-CMD ["python", "-m", "src.train.model.train"]
+CMD ["python", "-m", "src.model.train"]

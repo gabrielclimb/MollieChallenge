@@ -4,12 +4,6 @@ import mlflow
 from mlflow.tracking.client import MlflowClient
 
 
-model_name = "BreastCancerModel"
-stage = "Production"
-
-model = mlflow.pyfunc.load_model(model_uri=f"models:/{model_name}/{stage}")
-
-
 class MlflowModel:
     def __init__(
         self,
@@ -76,4 +70,6 @@ class MlflowModel:
         return self.__version__
 
 
-m = MlflowModel(model_name)
+if __name__ == "__main__":
+    model_name = "BreastCancerModel"
+    m = MlflowModel(model_name)
