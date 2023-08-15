@@ -55,3 +55,12 @@ To stop and remove all the Docker containers associated with this setup, run:
 ```bash
 make down
 ```
+
+
+**PS**: If you want test the train outside docker you need set:
+```bash
+export MLFLOW_TRACKING_URI=http://localhost:5000
+export MLFLOW_S3_ENDPOINT_URL=http://localhost:9000
+export AWS_ACCESS_KEY_ID=minio
+export AWS_SECRET_ACCESS_KEY=minio123
+```
