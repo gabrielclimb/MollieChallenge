@@ -15,14 +15,14 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from yellowbrick.classifier import DiscriminationThreshold
 
-TRACKING_URI = "http://0.0.0.0:5000/"
+# TRACKING_URI = "http://0.0.0.0:5000/"
 
 
 def main():
-    columns_with_no_meaning = ["Unnamed: 32", "id"]
+    dataset_url = "https://raw.githubusercontent.com/pkmklong/Breast-Cancer-Wisconsin-Diagnostic-DataSet/master/data.csv"
+    df = pd.read_csv(dataset_url)
+    df = treat_dataframe(df)
     y_column_name = "diagnosis"
-    df = pd.read_csv("cancer.csv").drop(columns=columns_with_no_meaning)
-
     y = y = df["diagnosis"].map({"B": 0, "M": 1})
     X = df.drop(columns=[y_column_name])
 
@@ -36,7 +36,6 @@ def main():
 
     best_threshold = get_best_threshold(rf_model, class_weight_ratio, X_train, y_train)
 
-    mlflow.set_tracking_uri(TRACKING_URI)
     experiment_name = "Breast-Cancer-Training"
     mlflow.set_experiment(experiment_name=experiment_name)
     with mlflow.start_run(run_name="BreastCancerModelTraining"):
@@ -68,6 +67,19 @@ def main():
             plot_precision_recall(precision_rf, recall_rf, thresholds_rf),
             "precision_recall.png",
         )
+
+
+def treat_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    columns_with_no_meaning = ["Unnamed: 32", "id"]
+    columns_to_rename = {
+        "concave points_mean": "concave_points_mean",
+        "concave points_se": "concave_points_se",
+        "concave points_worst": "concave_points_worst",
+    }
+
+    df = df.drop(columns=columns_with_no_meaning)
+    df = df.rename(columns=columns_to_rename)
+    return df
 
 
 def calc_class_weight(y_train: pd.Series, y_test: pd.Series) -> np.float64:

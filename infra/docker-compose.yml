@@ -5,6 +5,8 @@ services:
         restart: always
         image: minio/minio@sha256:e8f5efa4d99c5d8eab0dbf5b7824686e9b45726a07a860c27a8b8588edace127
         container_name: mlflow_s3
+        env_file:
+            - .env
         ports:
             - "9000:9000"
             - "9001:9001"
@@ -36,6 +38,8 @@ services:
         restart: always
         image: mysql/mysql-server@sha256:5b40d96b11333570143d98d3a74100fefadb9abb17b27a95dbc9ad33544ec142
         container_name: mlflow_db
+        env_file:
+            - .env
         ports:
             - "3306:3306"
         environment:
@@ -51,6 +55,8 @@ services:
         build: ./mlflow
         image: mlflow_server
         container_name: mlflow_server
+        env_file:
+            - .env
         depends_on:
             - mc
             - db
@@ -61,14 +67,6 @@ services:
             - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
             - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
         command: mlflow server --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE} --default-artifact-root s3://mlflow/ --host 0.0.0.0
-        networks:
-            - network
-
-networks:
-  network:
-    driver: bridge
-    name: mlflwo_network
-
 
 volumes:
     dbdata:
