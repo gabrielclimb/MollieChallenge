@@ -27,6 +27,7 @@ dev = [
 ]
 
 serving=[
+  "mlflow==2.5.0",
   "pydantic==2.1.1",
   "fastapi==0.101.0",
   "uvicorn==0.23.2"
