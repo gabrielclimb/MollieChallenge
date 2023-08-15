@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 
-from src.train.model.train import (
+from src.model.train import (
     calc_class_weight,
     generate_metrics,
     train_model,

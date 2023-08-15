@@ -5,6 +5,7 @@ import mlflow
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.figure import Figure
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     confusion_matrix,
@@ -102,7 +103,7 @@ def generate_metrics(
     }
 
 
-def plot_confusion_matrix(y_test, y_pred):
+def plot_confusion_matrix(y_test: pd.Series, y_pred: np.ndarray) -> Figure:
     fig, ax = plt.subplots()
     cm = confusion_matrix(y_test, y_pred, normalize="true") * 100
     df = pd.DataFrame(cm.T, index=["B", "M"], columns=["B", "M"])
@@ -112,7 +113,9 @@ def plot_confusion_matrix(y_test, y_pred):
     return fig
 
 
-def plot_precision_recall(precisions, recalls, thresholds):
+def plot_precision_recall(
+    precisions: np.ndarray, recalls: np.ndarray, thresholds: np.ndarray
+) -> Figure:
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.plot(thresholds, precisions[:-1], "r--", label="Precisions")
     ax.plot(thresholds, recalls[:-1], "#424242", label="Recalls")
@@ -125,7 +128,13 @@ def plot_precision_recall(precisions, recalls, thresholds):
     return fig
 
 
-def log_model_mlflow(X_train, X_test, y_test, rf_model, best_threshold):
+def log_model_mlflow(
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    rf_model: RandomForestClassifier,
+    best_threshold: np.float64,
+) -> None:
     experiment_name = "Breast-Cancer-Training"
     mlflow.set_experiment(experiment_name=experiment_name)
     with mlflow.start_run(run_name="BreastCancerModelTraining"):
