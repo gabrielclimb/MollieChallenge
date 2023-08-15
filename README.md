@@ -14,7 +14,7 @@ This section provides instructions on how to set up the environment for Explorat
     ```
 
 ### Model Training and Deployment Setup
-This project leverages mlflow as a comprehensive tool for model development, experimentation, and model registry. By integrating mlflow within a Docker Compose setup, this project accurately simulates a production environment. The training and server stages are seamlessly incorporated into this setup, creating a unified and efficient development-to-deployment workflow.
+This project leverages [mlflow](https://mlflow.org/) as a comprehensive tool for model development, experimentation, and model registry. By integrating mlflow within a Docker Compose setup, this project accurately simulates a production environment. The training and server stages are seamlessly incorporated into this setup, creating a unified and efficient development-to-deployment workflow.
 
 ### 1. Setting Up MLflow with Object Storage Service and Database
 
