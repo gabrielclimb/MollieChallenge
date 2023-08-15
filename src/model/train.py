@@ -1,4 +1,3 @@
-import os
 from typing import Any, Dict
 
 import matplotlib.pyplot as plt
@@ -16,9 +15,6 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import train_test_split
 from yellowbrick.classifier import DiscriminationThreshold
-
-if "5000" not in os.environ.get("MLFLOW_TRACKING_URI", ""):
-    raise ValueError("MLFLOW_TRACKING_URI is wrong setted")
 
 
 def main():
