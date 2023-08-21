@@ -2,12 +2,18 @@
 ### Exploratory Data Analysis (EDA)
 This section provides instructions on how to set up the environment for Exploratory Data Analysis (EDA) in this project. To install the required packages for EDA, run the following command:
 
-1. **Installing Required Packages**: Run the following command to install the necessary packages for EDA:
+1. Create a virtual enviroment and activate it:
     ```bash
-    pip install .
+    python -m venv .venv
+    source .venv/bin/activate
     ```
 
-2. Opening Jupyter Notebook: Launch the Jupyter notebook by running:
+2. **Installing Required Packages**: Run the following command to install the necessary packages for EDA:
+    ```bash
+    pip install ".[dev]"
+    ```
+
+3. Opening Jupyter Notebook: Launch the Jupyter notebook by running:
 
     ```bash
     jupyter lab EDA/challenge.ipynb
@@ -37,7 +43,7 @@ make train
 ```
 After finish the training step,promote the model to production to make serving possible. Enter this [link](http://localhost:5000/#/models/BreastCancerModel/versions/1), go to `stage` and choose `Production`:
 
-![Alt text](image/model_stage.png)
+![Alt text](docs/image/model_stage.png)
 
 
 #### 3. Serving the Model from the Model Registry
@@ -64,3 +70,8 @@ export MLFLOW_S3_ENDPOINT_URL=http://localhost:9000
 export AWS_ACCESS_KEY_ID=minio
 export AWS_SECRET_ACCESS_KEY=minio123
 ```
+
+# Deployment Archicture
+![arch](docs/image/architecture_overview.png)
+
+The diagram above illustrates the general system architecture. MLflow serves as both our experimentation platform and model registry. The model is served using the FastAPI framework, which retrieves the model set in the MLflow model registry at the production stage.
