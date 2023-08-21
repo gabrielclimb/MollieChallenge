@@ -92,7 +92,7 @@ Before proceeding, you'll need to install [Tilt](https://docs.tilt.dev/) and [Do
   ```bash
     tilt up && tilt down
     ```
-    Once the API is up and running, it can be accessed at `localhost:8000`. Additionally, MLflow can be accessed at `localhost:5000`.
+    Once the API is up and running, it can be accessed at `localhost:8000`. Additionally, MLflow can be accessed at `localhost:5000/docs`.
 
 - To tear down the cluster, run:
     ```bash
