@@ -27,3 +27,9 @@ endif
 
 down:
 	docker-compose -f infra/docker-compose.yml down && docker-compose down
+
+k8s-setup:
+	sh infra/k8s/kind-with-registry.sh
+
+k8s-kill:
+	sh infra/k8s/teardown-kind-with-registry.sh

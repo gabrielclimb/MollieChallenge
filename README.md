@@ -75,3 +75,26 @@ export AWS_SECRET_ACCESS_KEY=minio123
 ![arch](docs/image/architecture_overview.png)
 
 The diagram above illustrates the general system architecture. MLflow serves as both our experimentation platform and model registry. The model is served using the FastAPI framework, which retrieves the model set in the MLflow model registry at the production stage.
+
+## Kubernetes Local Deployment using Tiltfile and kind
+
+In this project, we utilize both Tiltfile and kind to simulate a Kubernetes local deployment. This approach enables a robust and efficient development environment that closely mirrors production settings.
+
+If you want know more about kind and tilt you can check [here](docs/kind_tilt.md).
+
+Before proceeding, you'll need to install [Tilt](https://docs.tilt.dev/) and [Docker](https://docs.docker.com/engine/install/) before.
+
+- To setup the K8s cluster, run:
+    ```bash
+    make k8s-setup
+    ```
+- To bring up the model API, run:
+  ```bash
+    tilt up && tilt down
+    ```
+    Once the API is up and running, it can be accessed at `localhost:8000`. Additionally, MLflow can be accessed at `localhost:5000`.
+
+- To tear down the cluster, run:
+    ```bash
+    make k8s-kill
+    ```
