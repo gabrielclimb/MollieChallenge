@@ -2,25 +2,25 @@
 ### Exploratory Data Analysis (EDA)
 This section provides instructions on how to set up the environment for Exploratory Data Analysis (EDA) in this project. To install the required packages for EDA, run the following command:
 
-1. Create a virtual enviroment and activate it:
+1. Create a virtual environment and activate it:
     ```bash
     python -m venv .venv
     source .venv/bin/activate
     ```
 
-2. **Installing Required Packages**: Run the following command to install the necessary packages for EDA:
+2. **Installing Required Packages**: Run the following command to install the necessary packages for EDA.
     ```bash
     pip install ".[dev]"
     ```
 
-3. Opening Jupyter Notebook: Launch the Jupyter notebook by running:
+3. Launch the Jupyter notebook by running:
 
     ```bash
     jupyter lab EDA/challenge.ipynb
     ```
 
 ### Model Training and Deployment Setup
-This project leverages [mlflow](https://mlflow.org/) as a comprehensive tool for model development, experimentation, and model registry. By integrating mlflow within a Docker Compose setup, this project accurately simulates a production environment. The training and server stages are seamlessly incorporated into this setup, creating a unified and efficient development-to-deployment workflow.
+This project leverages [mlflow](https://mlflow.org/) as a comprehensive tool for model development, experimentation and model registry. By integrating mlflow within a Docker Compose setup, this project accurately simulates a production environment. The training and server stages are seamlessly incorporated into this setup, creating an unified and efficient development-to-deployment workflow process.
 
 ### 1. Setting Up MLflow with Object Storage Service and Database
 
@@ -41,7 +41,7 @@ Initiate the training process by executing:
 ```bash
 make train
 ```
-After finish the training step,promote the model to production to make serving possible. Enter this [link](http://localhost:5000/#/models/BreastCancerModel/versions/1), go to `stage` and choose `Production`:
+After finishing the training step, promote the model to production to make serving possible. Enter this [link](http://localhost:5000/#/models/BreastCancerModel/versions/1), go to `stage` and choose `Production`:
 
 ![Alt text](docs/image/model_stage.png)
 
@@ -63,7 +63,7 @@ make down
 ```
 
 
-**PS**: If you want test the train outside docker you need set:
+**PS**: If you want to test the training outside Docker, you need to set:
 ```bash
 export MLFLOW_TRACKING_URI=http://localhost:5000
 export MLFLOW_S3_ENDPOINT_URL=http://localhost:9000
