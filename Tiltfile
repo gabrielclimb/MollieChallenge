@@ -14,7 +14,7 @@ dc_resource('mc', labels=["mc"])
 docker_build('model_api', '.', target="api")
 docker_build('cancer-train', '.', target="train")
 
-# fraud-block-service
+
 k8s_yaml(
     helm(
         "charts/",
