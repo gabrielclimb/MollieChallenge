@@ -21,7 +21,7 @@ k8s_yaml(
         name="mollie-challenge",
         values=["charts/values.yaml"],
         set= [
-            "image.repository=fraud-block-service",
+            "image.repository=mollie-challenge",
             "image.tag=latest",
             "serviceAccount.create=true",
             "local.aws_endpoint=http://minio:9000",
