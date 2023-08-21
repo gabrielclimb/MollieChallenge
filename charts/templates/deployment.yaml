@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+spec:
+  replicas: {{ Values.api.replicas}}
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: {{ .Values.api.image }}
+        ports:
+        - containerPort: {{ .Values.api.port }}
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ .Values.common.awsAccessKeyId }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ .Values.common.awsSecretAccessKey }}
+        - name: MLFLOW_TRACKING_URI
+          value: {{ .Values.common.mlflowTrackingUri }}
+        - name: MLFLOW_S3_ENDPOINT_URL
+          value: {{ .Values.common.mlflowS3EndpointUrl }}
