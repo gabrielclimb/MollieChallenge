@@ -18,6 +18,10 @@ from yellowbrick.classifier import DiscriminationThreshold
 
 
 def main():
+    """
+    Main function to execute the full pipeline including data preprocessing,
+    model training, threshold optimization, and logging using MLflow.
+    """
     dataset_url = "https://raw.githubusercontent.com/pkmklong/Breast-Cancer-Wisconsin-Diagnostic-DataSet/master/data.csv"
     df = pd.read_csv(dataset_url)
     df = treat_dataframe(df)
@@ -39,6 +43,15 @@ def main():
 
 
 def treat_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Drops unwanted columns and renames specific columns in the dataframe.
+
+    Args:
+        df (pd.DataFrame): Original DataFrame.
+
+    Returns:
+        pd.DataFrame: Treated DataFrame.
+    """
     columns_with_no_meaning = ["Unnamed: 32", "id"]
     columns_to_rename = {
         "concave points_mean": "concave_points_mean",
@@ -52,6 +65,16 @@ def treat_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def calc_class_weight(y_train: pd.Series, y_test: pd.Series) -> np.float64:
+    """
+    Calculates the class weight ratio.
+
+    Args:
+        y_train (pd.Series): Training labels.
+        y_test (pd.Series): Test labels.
+
+    Returns:
+        np.float64: Class weight ratio.
+    """
     class_distribution_train = y_train.value_counts(normalize=True)
     return class_distribution_train[0] / class_distribution_train[1]
 
@@ -59,6 +82,17 @@ def calc_class_weight(y_train: pd.Series, y_test: pd.Series) -> np.float64:
 def train_model(
     X_train: pd.DataFrame, y_train: pd.Series, class_weight_ratio: float
 ) -> RandomForestClassifier:
+    """
+    Trains the Random Forest Classifier model.
+
+    Args:
+        X_train (pd.DataFrame): Training features.
+        y_train (pd.Series): Training labels.
+        class_weight_ratio (float): Class weight ratio.
+
+    Returns:
+        RandomForestClassifier: Trained model.
+    """
     rf_model = RandomForestClassifier(
         class_weight={0: 1, 1: class_weight_ratio}, random_state=42
     )
@@ -68,6 +102,18 @@ def train_model(
 def get_best_threshold(
     model: Any, class_weight_ratio: float, X_train: pd.DataFrame, y_train: pd.Series
 ) -> float:
+    """
+    Gets the best threshold using Discrimination Threshold.
+
+    Args:
+        model (Any): Trained model.
+        class_weight_ratio (float): Class weight ratio.
+        X_train (pd.DataFrame): Training features.
+        y_train (pd.Series): Training labels.
+
+    Returns:
+        float: Best threshold.
+    """
     thresholds = DiscriminationThreshold(
         model,
         quantiles=np.array([0.0, 0.5, 0.75]),
@@ -89,6 +135,18 @@ def generate_metrics(
     X_test: pd.DataFrame,
     y_test: pd.Series,
 ) -> Dict[str, Any]:
+    """
+    Generates metrics such as roc_auc_score, f1_score, and confusion matrix values.
+
+    Args:
+        model (RandomForestClassifier): Trained model.
+        threshold (float): Threshold for prediction.
+        X_test (pd.DataFrame): Test features.
+        y_test (pd.Series): Test labels.
+
+    Returns:
+        Dict[str, Any]: Dictionary containing the metrics.
+    """
     y_prob = model.predict_proba(X_test)[:, 1] > threshold
     y_pred = model.predict(X_test)
 
@@ -104,6 +162,16 @@ def generate_metrics(
 
 
 def plot_confusion_matrix(y_test: pd.Series, y_pred: np.ndarray) -> Figure:
+    """
+    Plots the confusion matrix.
+
+    Args:
+        y_test (pd.Series): Test labels.
+        y_pred (np.ndarray): Predicted labels.
+
+    Returns:
+        Figure: Matplotlib figure object.
+    """
     fig, ax = plt.subplots()
     cm = confusion_matrix(y_test, y_pred, normalize="true") * 100
     df = pd.DataFrame(cm.T, index=["B", "M"], columns=["B", "M"])
@@ -116,6 +184,17 @@ def plot_confusion_matrix(y_test: pd.Series, y_pred: np.ndarray) -> Figure:
 def plot_precision_recall(
     precisions: np.ndarray, recalls: np.ndarray, thresholds: np.ndarray
 ) -> Figure:
+    """
+    Plots precision and recall.
+
+    Args:
+        precisions (np.ndarray): Precisions array.
+        recalls (np.ndarray): Recalls array.
+        thresholds (np.ndarray): Thresholds array.
+
+    Returns:
+        Figure: Matplotlib figure object.
+    """
     fig, ax = plt.subplots(figsize=(12, 8))
     ax.plot(thresholds, precisions[:-1], "r--", label="Precisions")
     ax.plot(thresholds, recalls[:-1], "#424242", label="Recalls")
@@ -135,6 +214,16 @@ def log_model_mlflow(
     rf_model: RandomForestClassifier,
     best_threshold: np.float64,
 ) -> None:
+    """
+    Logs the model and metrics to MLflow.
+
+    Args:
+        X_train (pd.DataFrame): Training features.
+        X_test (pd.DataFrame): Test features.
+        y_test (pd.Series): Test labels.
+        rf_model (RandomForestClassifier): Trained model.
+        best_threshold (np.float64): Best threshold value.
+    """
     experiment_name = "Breast-Cancer-Training"
     mlflow.set_experiment(experiment_name=experiment_name)
     with mlflow.start_run(run_name="BreastCancerModelTraining"):
