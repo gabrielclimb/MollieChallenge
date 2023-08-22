@@ -19,6 +19,6 @@ repos:
       - id: pytest-check
         name: pytest-check
         entry: pytest --cov-report term --cov=src src/ -vvv
-        language: python_venv
+        language: python
         pass_filenames: false
         always_run: true
