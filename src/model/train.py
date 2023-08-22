@@ -26,7 +26,7 @@ def main():
     df = pd.read_csv(dataset_url)
     df = treat_dataframe(df)
     y_column_name = "diagnosis"
-    y = y = df["diagnosis"].map({"B": 0, "M": 1})
+    y = df["diagnosis"].map({"B": 0, "M": 1})
     X = df.drop(columns=[y_column_name])
 
     X_train, X_test, y_train, y_test = train_test_split(

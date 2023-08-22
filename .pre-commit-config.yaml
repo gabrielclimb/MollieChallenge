@@ -13,11 +13,12 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude: docs/kind_tilt.md
   -   repo: local
       hooks:
       - id: pytest-check
         name: pytest-check
-        entry: pytest --cov=src --junitxml=report.xml src/ -vvv
-        language: python_venv
+        entry: pytest --cov-report term --cov=src src/ -vvv
+        language: python
         pass_filenames: false
         always_run: true
