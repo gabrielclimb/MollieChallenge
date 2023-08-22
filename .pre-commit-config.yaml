@@ -12,7 +12,6 @@ repos:
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
-        exclude: 3rd_party
       - id: end-of-file-fixer
   -   repo: local
       hooks:
