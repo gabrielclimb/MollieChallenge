@@ -13,6 +13,7 @@ repos:
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
+        exclude: docs/kind_tilt.md
   -   repo: local
       hooks:
       - id: pytest-check
