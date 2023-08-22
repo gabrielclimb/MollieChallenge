@@ -12,12 +12,13 @@ repos:
     rev: v4.4.0
     hooks:
       - id: trailing-whitespace
+        exclude: 3rd_party
       - id: end-of-file-fixer
   -   repo: local
       hooks:
       - id: pytest-check
         name: pytest-check
-        entry: pytest --cov=src src/ -vvv
+        entry: pytest --cov-report term --cov=src src/ -vvv
         language: python_venv
         pass_filenames: false
         always_run: true
